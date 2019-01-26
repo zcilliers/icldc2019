@@ -23,31 +23,31 @@ var distanceCalculator = function (entries) {
     var candidateKeys = [];
     for (var i = 0; i < entries.length; i++) {
         var entry = entries[i];
-        var compareForm = entry["compare_form"];
-        for (var i = 0; i < entries.length; i++) {
-            var entry = entries[i];
+        if ("compare_form" in entry){
             var compareForm = entry["compare_form"];
-            // If target entry is a phrase
-            if (compareForm[0].indexOf(' ') >= 0) {
-                var compare_form_array = compareForm[0].split(" ");
-                for (var k = 0; k < compare_form_array.length; k++) {
-                    if (!(compare_form_array[k] in candidates)) {
-                        candidates[compare_form_array[k]] = [];
-                        candidateKeys.push(String(compare_form_array[k]));
-                    }
-                    if (!(entry in candidates)) {
-                        candidates[compare_form_array[k]].push(entry);
-                    }
-                }
-                // If target entry is a word
-            } else {
-                if (!(compareForm in candidates)) {
-                    candidates[compareForm] = [];
-                    candidateKeys.push(String(compareForm));
-                }
-                candidates[compareForm].push(entry);
-            };
+        } else {
+            var compareForm = entry["word"];
         }
+        // If target entry is a phrase
+        if (compareForm.indexOf(' ') >= 0) {
+            var compare_form_array = compareForm.split(" ");
+            for (var k = 0; k < compare_form_array.length; k++) {
+                if (!(compare_form_array[k] in candidates)) {
+                    candidates[compare_form_array[k]] = [];
+                    candidateKeys.push(String(compare_form_array[k]));
+                }
+                if (!(entry in candidates)) {
+                    candidates[compare_form_array[k]].push(entry);
+                }
+            }
+            // If target entry is a word
+        } else {
+            if (!(compareForm in candidates)) {
+                candidates[compareForm] = [];
+                candidateKeys.push(String(compareForm));
+            }
+            candidates[compareForm].push(entry);
+        };
     }
     // Then build a Levenshtein Automaton from the keys
     var builder = new levenshtein.Builder()
